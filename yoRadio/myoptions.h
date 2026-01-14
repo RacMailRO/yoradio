@@ -47,7 +47,7 @@
 #define I2S_DOUT    27
 
 // --- OTHER ---
-#define L10N_LANGUAGE EN
+#define L10N_LANGUAGE RO
 //#define BRIGHTNESS_PIN TFT_BL
 #define AUTOBACKLIGHT_MAX   1024
 #endif
