@@ -15,12 +15,12 @@
 
 #define TFT_ROTATE 2
 
-#define TFT_MISO 12it's just perfect. witch day of the week is the longest? miercuri has room can you move the 
+#define TFT_MISO 12 
 #define TFT_MOSI 13
 #define TFT_SCLK 14
 #define TS_CS 33
 
-#define TOUCH_OFFSET_ROTATION 1 // Chip select pin (T_CS) of touch screen
+#define TOUCH_OFFSET_ROTATION 2 // Chip select pin (T_CS) of touch screen
 #define SMOOTH_FONT
 #define TS_SPIPINS 14, 12, 13 /* SCK, MISO, MOSI */
 #define SPI_FREQUENCY 55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
