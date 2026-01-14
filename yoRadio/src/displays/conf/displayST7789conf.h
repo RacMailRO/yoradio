@@ -41,7 +41,7 @@ const FillConfig  heapbarConf     PROGMEM = {{ 0, 239, 0, WA_LEFT }, DSP_WIDTH, 
 /* WIDGETS  */                           /* { left, top, fontsize, align } */
 const WidgetConfig bootstrConf    PROGMEM = { 0, 182, 1, WA_CENTER };
 const WidgetConfig bitrateConf    PROGMEM = { 70, 191, 1, WA_LEFT };
-const WidgetConfig voltxtConf     PROGMEM = { 24, 214, 2, WA_RIGHT };
+const WidgetConfig voltxtConf     PROGMEM = { 48, 214, 2, WA_RIGHT };
 const WidgetConfig  iptxtConf     PROGMEM = { TFT_FRAMEWDT, 214, 2, WA_LEFT };
 const WidgetConfig   rssiConf     PROGMEM = { TFT_FRAMEWDT, 208, 2, WA_RIGHT };
 const WidgetConfig numConf        PROGMEM = { 0, 120+30, 0, WA_CENTER };
