@@ -25,6 +25,9 @@
 //#define COLOR_WEATHER           255,   0, 216     /*  weather string                                            */
 #define COLOR_VU_MAX            246, 64, 0     /*  max of VU meter                                           */
 #define COLOR_VU_MIN            44, 162, 12     /*  min of VU meter                                           */
+#define COLOR_VU_MEDIUM        255, 255,   0     /*  medium of VU meter                                        */
+#define VU_MAX_BARS             2                /*  number of red bars                                        */
+#define VU_MEDIUM_BARS          2                /*  number of yellow bars                                     */
 //#define COLOR_CLOCK              60, 224,  33     /*  clock color                                               */
 //#define COLOR_CLOCK_BG           29,  29,   0     /*  clock color background                                    */
 //#define COLOR_SECONDS             0, 255, 255     /*  seconds color (DSP_ST7789, DSP_ILI9341, DSP_ILI9225)      */

@@ -51,6 +51,8 @@ struct theme_t {
   uint16_t vumax;
   uint16_t vumin;
   uint16_t vumedium;
+  uint8_t  vumaxbars;
+  uint8_t  vumediumbars;
   uint16_t clock;
   uint16_t clockbg;
   uint16_t seconds;
