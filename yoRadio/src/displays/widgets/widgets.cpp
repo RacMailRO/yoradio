@@ -610,7 +610,7 @@ void ClockWidget::init(WidgetConfig wconf, uint16_t fgcolor, uint16_t bgcolor){
   if(_fullclock) _superfont = TIME_SIZE / 17; //magick
   else if(TIME_SIZE==19 || TIME_SIZE==2) _superfont=1;
   else _superfont=0;
-  _space = (5*_superfont)/2; //magick
+  _space = (5*_superfont)/2 + 3; //magick
   #ifndef HIDE_DATE
   if(_fullclock){
     _dateheight = _superfont<4?2:3;
