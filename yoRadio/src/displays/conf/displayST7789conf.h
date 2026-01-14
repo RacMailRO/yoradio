@@ -41,7 +41,7 @@ const FillConfig  heapbarConf     PROGMEM = {{ 0, 239, 0, WA_LEFT }, DSP_WIDTH, 
 /* WIDGETS  */                           /* { left, top, fontsize, align } */
 const WidgetConfig bootstrConf    PROGMEM = { 0, 182, 1, WA_CENTER };
 const WidgetConfig bitrateConf    PROGMEM = { 70, 191, 1, WA_LEFT };
-const WidgetConfig voltxtConf     PROGMEM = { 100, 214, 2, WA_RIGHT };
+const WidgetConfig voltxtConf     PROGMEM = { 60, 214, 2, WA_RIGHT };
 const WidgetConfig  iptxtConf     PROGMEM = { TFT_FRAMEWDT, 214, 2, WA_LEFT };
 const WidgetConfig   rssiConf     PROGMEM = { TFT_FRAMEWDT, 208, 2, WA_RIGHT };
 const WidgetConfig numConf        PROGMEM = { 0, 120+30, 0, WA_CENTER };
@@ -61,8 +61,8 @@ const VUBandsConfig bandsConf     PROGMEM = { 24, 100, 4, 2, 10, 2 };
 
 /* STRINGS  */
 const char         numtxtFmt[]    PROGMEM = "%d";
-const char           rssiFmt[]    PROGMEM = "WiFi %d";
-const char          iptxtFmt[]    PROGMEM = "\010 %s";
+const char           rssiFmt[]    PROGMEM = "%d";
+const char          iptxtFmt[]    PROGMEM = "\010%s";
 const char         voltxtFmt[]    PROGMEM = "\023\025%d";
 const char        bitrateFmt[]    PROGMEM = "%d kBs";
 
