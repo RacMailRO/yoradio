@@ -92,6 +92,13 @@ char* utf8Rus(const char* str, bool uppercase) {
         #endif
       #endif
       }
+    } else if ((c & 0xF0) == 0xF0 && str[i + 1] && str[i + 2] && str[i + 3]) {
+      // 4-byte UTF-8
+      uint32_t code = ((c & 0x07) << 18) | (((uint8_t)str[i + 1] & 0x3F) << 12) | (((uint8_t)str[i + 2] & 0x3F) << 6) | ((uint8_t)str[i + 3] & 0x3F);
+      if (code == 0x1F48B) {
+        out[outPos++] = 15; // kiss mark index
+      }
+      i += 3;
     } else {                              // ASCII
     #if defined(DSP_LCD) && !defined(LCD_RUS)
       char ch = (char)toupper(c);
