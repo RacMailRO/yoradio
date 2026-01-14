@@ -153,18 +153,18 @@ class SliderWidget: public Widget {
 class VuWidget: public Widget {
   public:
     VuWidget() {}
-    VuWidget(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumincolor, uint16_t bgcolor)
-            { init(wconf, bands, vumaxcolor, vumincolor, bgcolor); }
+    VuWidget(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumediumcolor, uint16_t vumincolor, uint16_t bgcolor)
+            { init(wconf, bands, vumaxcolor, vumediumcolor, vumincolor, bgcolor); }
     ~VuWidget();
     using Widget::init;
-    void init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumincolor, uint16_t bgcolor);
+    void init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumediumcolor, uint16_t vumincolor, uint16_t bgcolor);
     void loop();
   protected:
     #if !defined(DSP_LCD) && !defined(DSP_OLED)
       Canvas *_canvas;
     #endif
     VUBandsConfig _bands;
-    uint16_t _vumaxcolor, _vumincolor;
+    uint16_t _vumaxcolor, _vumediumcolor, _vumincolor;
     void _draw();
     void _clear();
 };

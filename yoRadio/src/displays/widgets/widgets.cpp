@@ -358,9 +358,10 @@ VuWidget::~VuWidget() {
   if(_canvas) free(_canvas);
 }
 
-void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumincolor, uint16_t bgcolor) {
+void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumediumcolor, uint16_t vumincolor, uint16_t bgcolor) {
   Widget::init(wconf, bgcolor, bgcolor);
   _vumaxcolor = vumaxcolor;
+  _vumediumcolor = vumediumcolor;
   _vumincolor = vumincolor;
   _bands = bands;
   _canvas = new Canvas(_bands.width * 2 + _bands.space, _bands.height);
@@ -401,7 +402,9 @@ void VuWidget::_draw(){
     if(i%(dimension/_bands.perheight)==0){
       if(_config.align){
         #ifndef BOOMBOX_STYLE
-          bandColor = (i>_bands.width-(_bands.width/_bands.perheight)*4)?_vumaxcolor:_vumincolor;
+          if(i>_bands.width-(_bands.width/_bands.perheight)*3) bandColor = _vumaxcolor;
+          else if(i>_bands.width-(_bands.width/_bands.perheight)*6) bandColor = _vumediumcolor;
+          else bandColor = _vumincolor;
           _canvas->fillRect(i, 0, h, _bands.height, bandColor);
           _canvas->fillRect(i + _bands.width + _bands.space, 0, h, _bands.height, bandColor);
         #else
@@ -411,7 +414,9 @@ void VuWidget::_draw(){
           _canvas->fillRect(i + _bands.width + _bands.space, 0, h, _bands.height, bandColor);
         #endif
       }else{
-        bandColor = (i<(_bands.height/_bands.perheight)*3)?_vumaxcolor:_vumincolor;
+        if(i<(_bands.height/_bands.perheight)*3) bandColor = _vumaxcolor;
+        else if(i<(_bands.height/_bands.perheight)*6) bandColor = _vumediumcolor;
+        else bandColor = _vumincolor;
         _canvas->fillRect(0, i, _bands.width, h, bandColor);
         _canvas->fillRect(_bands.width + _bands.space, i, _bands.width, h, bandColor);
       }
@@ -449,7 +454,7 @@ void VuWidget::_clear(){
 }
 #else // DSP_LCD
 VuWidget::~VuWidget() { }
-void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumincolor, uint16_t bgcolor) {
+void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumediumcolor, uint16_t vumincolor, uint16_t bgcolor) {
   Widget::init(wconf, bgcolor, bgcolor);
 }
 void VuWidget::_draw(){ }

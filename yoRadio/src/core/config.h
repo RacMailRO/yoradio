@@ -50,6 +50,7 @@ struct theme_t {
   uint16_t weather;
   uint16_t vumax;
   uint16_t vumin;
+  uint16_t vumedium;
   uint16_t clock;
   uint16_t clockbg;
   uint16_t seconds;

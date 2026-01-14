@@ -18,8 +18,8 @@
 /*----------------------------------------------------------------------------------------------------------------*/
 //#define COLOR_BACKGROUND        255, 255,   0     /*  background                                                */
 //#define COLOR_STATION_NAME        0,   0,   0     /*  station name                                              */
-#define COLOR_STATION_BG         91, 118, 255     /*  station name background                                   */
-#define COLOR_STATION_FILL       91, 118, 255     /*  station name fill background                              */
+//#define COLOR_STATION_BG         91, 118, 255     /*  station name background                                   */
+//#define COLOR_STATION_FILL       91, 118, 255     /*  station name fill background                              */
 //#define COLOR_SNG_TITLE_1       255,   0,   0     /*  first title                                               */
 //#define COLOR_SNG_TITLE_2         0,   0,   0     /*  second title                                              */
 //#define COLOR_WEATHER           255,   0, 216     /*  weather string                                            */
