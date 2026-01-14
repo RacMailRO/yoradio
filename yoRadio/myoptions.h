@@ -15,7 +15,7 @@
 
 #define TFT_ROTATE 2
 
-#define TFT_MISO 12
+#define TFT_MISO 12it's just perfect. witch day of the week is the longest? miercuri has room 
 #define TFT_MOSI 13
 #define TFT_SCLK 14
 #define TS_CS 33
