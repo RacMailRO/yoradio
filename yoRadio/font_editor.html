@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLCD Font Editor</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f0f0f0; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .editor-section { display: flex; flex-direction: column; align-items: center; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(5, 40px); grid-gap: 2px; margin-bottom: 20px; }
+        .cell { width: 40px; height: 40px; border: 1px solid #ccc; background: white; cursor: pointer; }
+        .cell.active { background: #000; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        textarea { width: 100%; height: 150px; font-family: monospace; }
+        .glyph-list { display: flex; flex-wrap: wrap; gap: 5px; max-width: 800px; margin-top: 20px; }
+        .glyph-preview { border: 1px solid #ddd; padding: 2px; cursor: pointer; background: white; position: relative; }
+        .glyph-preview:hover { background-color: #e0e0e0; }
+        .glyph-preview.selected { border-color: blue; background-color: #d0d0ff; }
+        canvas { border: 1px solid #eee; display: block; }
+    </style>
+</head>
+<body>
+    <h1>GLCD Font Editor</h1>
+    
+    <div class="container">
+        <div class="editor-section">
+            <h2>Edit Glyph <span id="currentIndex">0</span></h2>
+            <div class="grid" id="editorGrid"></div>
+            <div class="controls">
+                <button onclick="clearGrid()">Clear</button>
+                <button onclick="invertGrid()">Invert</button>
+                <button onclick="saveCurrentGlyph()">Update Glyph</button>
+            </div>
+            <div>
+                <label>Hex Output:</label>
+                <input type="text" id="hexOutput" readonly style="width: 200px; font-family: monospace;">
+            </div>
+        </div>
+
+        <div class="editor-section" style="flex: 1; min-width: 300px;">
+            <h2>Input / Output</h2>
+            <p>Upload your <code>glcdfont.c</code> or paste content below.</p>
+            <input type="file" id="fileInput" accept=".c,.txt" onchange="handleFileUpload(this)">
+            <textarea id="fontData" placeholder="Paste full file content here..."></textarea>
+            <div class="controls">
+                <button onclick="parseFontData()">Load from Text Area</button>
+                <button onclick="generateOutput()">Generate C Code</button>
+                <button onclick="downloadFile()">Download File</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="glyph-list" id="glyphList"></div>
+
+    <script>
+        let glyphs = []; // Array of { bytes: [], comment: string }
+        let preamble = "";
+        let postamble = "";
+        let currentGlyphIndex = 0;
+        const width = 5;
+        const height = 8; // Using 8 for byte sizing, though often 7 visible
+
+        function initGrid() {
+            const grid = document.getElementById('editorGrid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${width}, 40px)`;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.onclick = () => {
+                        cell.classList.toggle('active');
+                        updateHex();
+                    };
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('fontData').value = e.target.result;
+                parseFontData();
+            };
+            reader.readAsText(file);
+        }
+
+        function parseFontData() {
+            const text = document.getElementById('fontData').value;
+            // Split into Preamble, Data, Postamble
+            const startMarker = '{';
+            const endMarker = '};';
+            
+            const startIndex = text.indexOf(startMarker);
+            const endIndex = text.lastIndexOf(endMarker); // Look from end
+
+            if (startIndex === -1 || endIndex === -1) {
+                alert("Could not find array delimiters '{' and '};'");
+                return;
+            }
+
+            preamble = text.substring(0, startIndex + 1);
+            postamble = text.substring(endIndex);
+            
+            const arrayBody = text.substring(startIndex + 1, endIndex);
+            const lines = arrayBody.split('\n');
+            
+            glyphs = [];
+            let currentBytes = [];
+            let currentComment = "";
+
+            // Regex to find 0xXX numbers
+            const hexRegex = /0x[0-9A-Fa-f]{1,2}/g;
+
+            lines.forEach(line => {
+                // Check for comment
+                let comment = "";
+                const commentIndex = line.indexOf('//');
+                if (commentIndex !== -1) {
+                    comment = line.substring(commentIndex).trim();
+                }
+
+                // Find bytes
+                const matches = line.match(hexRegex);
+                if (matches) {
+                    const bytes = matches.map(h => parseInt(h));
+                    
+                    // We need to group them into chunks of 5
+                    // But usually the file has one glyph per line (5 bytes)
+                    // If multiple glyphs per line, we might lose comment association for the 2nd one.
+                    // Assuming standard format: 5 bytes per line + comment
+                    
+                    if (bytes.length === 5) {
+                        glyphs.push({ bytes: bytes, comment: comment });
+                    } else if (bytes.length > 0) {
+                        // Handle odd formatting (multiple per line or split across lines)
+                        // Simple approach: Accumulate bytes
+                        bytes.forEach(b => currentBytes.push(b));
+                        if(comment) currentComment = comment; // Save last comment seen?
+                        
+                        while(currentBytes.length >= 5) {
+                             const chunk = currentBytes.splice(0, 5);
+                             // If we just finished a chunk, attach the comment found on this line
+                             // This is imperfect for multiple glyphs/line but covers standard format
+                             glyphs.push({ bytes: chunk, comment: currentComment });
+                             currentComment = ""; // Reset
+                        }
+                    }
+                }
+            });
+
+            renderGlyphList();
+            if(glyphs.length > 0) loadGlyph(0);
+            alert(`Loaded ${glyphs.length} glyphs.`);
+        }
+
+        function loadGlyph(index) {
+            if (index < 0 || index >= glyphs.length) return;
+            currentGlyphIndex = index;
+            document.getElementById('currentIndex').innerText = index;
+            
+            document.querySelectorAll('.glyph-preview').forEach(el => el.classList.remove('selected'));
+            const preview = document.getElementById('preview-' + index);
+            if(preview) preview.classList.add('selected');
+
+            const g = glyphs[index];
+            for (let x = 0; x < width; x++) {
+                const byte = g.bytes[x];
+                for (let y = 0; y < height; y++) {
+                    const active = (byte >> y) & 1;
+                    const cell = document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+                    if(active) cell.classList.add('active');
+                    else cell.classList.remove('active');
+                }
+            }
+            updateHex();
+        }
+
+        function saveCurrentGlyph() {
+            const bytes = [];
+            for (let x = 0; x < width; x++) {
+                let byte = 0;
+                for (let y = 0; y < height; y++) {
+                    const cell = document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+                    if (cell.classList.contains('active')) {
+                        byte |= (1 << y);
+                    }
+                }
+                bytes.push(byte);
+            }
+            glyphs[currentGlyphIndex].bytes = bytes;
+            renderGlyphList();
+            generateOutput();
+        }
+        
+        function updateHex() {
+             const bytes = [];
+             for (let x = 0; x < width; x++) {
+                let byte = 0;
+                for (let y = 0; y < height; y++) {
+                    const cell = document.querySelector(`.cell[data-x="${x}"][data-y="${y}"]`);
+                    if (cell.classList.contains('active')) {
+                        byte |= (1 << y);
+                    }
+                }
+                bytes.push('0x' + byte.toString(16).toUpperCase().padStart(2, '0'));
+            }
+            document.getElementById('hexOutput').value = bytes.join(', ');
+        }
+
+        function generateOutput() {
+            let body = "\n";
+            glyphs.forEach((g, i) => {
+                const hex = g.bytes.map(b => '0x' + b.toString(16).toUpperCase().padStart(2, '0')).join(', ');
+                let comment = g.comment;
+                
+                // If no comment, generate one for standard ASCII range
+                if (!comment && i >= 32 && i <= 126) {
+                     // Escape backslash for C comment
+                     let char = String.fromCharCode(i);
+                     if(char === '\\') char = '\\\\';
+                     comment = `// ${char}`;
+                }
+                
+                body += `${hex}, ${comment ? comment : ''}\n`;
+            });
+            // Remove last comma? The C array usually tolerates trailing comma or we can strip it.
+            // Standard glcdfont.c has trailing comma usually or strict.
+            // The logic above adds comma after every line.
+            
+            // Reconstruct full file
+            const fullText = (preamble || "static const unsigned char font[] PROGMEM = {") + body + (postamble || "}; ");
+            document.getElementById('fontData').value = fullText;
+        }
+
+        function downloadFile() {
+            generateOutput();
+            const text = document.getElementById('fontData').value;
+            const blob = new Blob([text], { type: "text/plain" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "glcdfont.c";
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function renderGlyphList() {
+            const list = document.getElementById('glyphList');
+            list.innerHTML = '';
+            
+            glyphs.forEach((g, i) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = width * 2;
+                canvas.height = height * 2;
+                canvas.id = 'preview-' + i;
+                canvas.className = 'glyph-preview';
+                
+                // Tooltip logic
+                let title = g.comment;
+                if (!title) {
+                    if (i >= 32 && i <= 126) title = `Index ${i}: '${String.fromCharCode(i)}'`;
+                    else title = `Index ${i}`;
+                }
+                canvas.title = title;
+
+                canvas.onclick = () => loadGlyph(i);
+                
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'black';
+                
+                for (let x = 0; x < width; x++) {
+                    const byte = g.bytes[x];
+                    for (let y = 0; y < height; y++) {
+                        if ((byte >> y) & 1) {
+                            ctx.fillRect(x * 2, y * 2, 2, 2);
+                        }
+                    }
+                }
+                list.appendChild(canvas);
+            });
+        }
+        
+        function clearGrid() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
+            updateHex();
+        }
+        
+        function invertGrid() {
+            document.querySelectorAll('.cell').forEach(c => c.classList.toggle('active'));
+            updateHex();
+        }
+
+        initGrid();
+    </script>
+</body>
+</html>
