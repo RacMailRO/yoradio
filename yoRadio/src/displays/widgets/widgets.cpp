@@ -715,7 +715,7 @@ void ClockWidget::_printClock(bool force){
         gfx.setCursor(_linesleft+_space+1, _top()-CHARHEIGHT * _superfont);
         gfx.setTextColor(config.theme.dow, config.theme.background);
         //gfx.print(utf8Rus(LANG::dow[network.timeinfo.tm_wday], false));
-        sprintf(_tmp, "%s %2d %s %d", LANG::dow[network.timeinfo.tm_wday], network.timeinfo.tm_mday,LANG::mnths[network.timeinfo.tm_mon], network.timeinfo.tm_year+1900);
+        sprintf(_tmp, "%s %2d %s %d", LANG::dowf[network.timeinfo.tm_wday], network.timeinfo.tm_mday,LANG::mnths[network.timeinfo.tm_mon], network.timeinfo.tm_year+1900);
         #ifndef HIDE_DATE
         strlcpy(_datebuf, utf8Rus(_tmp, true), sizeof(_datebuf));
         uint16_t _datewidth = strlen(_datebuf) * CHARWIDTH*_dateheight;
