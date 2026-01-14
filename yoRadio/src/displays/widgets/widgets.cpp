@@ -358,10 +358,13 @@ VuWidget::~VuWidget() {
   if(_canvas) free(_canvas);
 }
 
-void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumincolor, uint16_t bgcolor) {
+void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumediumcolor, uint16_t vumincolor, uint8_t vumaxbars, uint8_t vumediumbars, uint16_t bgcolor) {
   Widget::init(wconf, bgcolor, bgcolor);
   _vumaxcolor = vumaxcolor;
+  _vumediumcolor = vumediumcolor;
   _vumincolor = vumincolor;
+  _vumaxbars = vumaxbars;
+  _vumediumbars = vumediumbars;
   _bands = bands;
   _canvas = new Canvas(_bands.width * 2 + _bands.space, _bands.height);
 }
@@ -401,17 +404,27 @@ void VuWidget::_draw(){
     if(i%(dimension/_bands.perheight)==0){
       if(_config.align){
         #ifndef BOOMBOX_STYLE
-          bandColor = (i>_bands.width-(_bands.width/_bands.perheight)*4)?_vumaxcolor:_vumincolor;
+          if(i>_bands.width-(_bands.width/_bands.perheight)*_vumaxbars) bandColor = _vumaxcolor;
+          else if(i>_bands.width-(_bands.width/_bands.perheight)*(_vumaxbars + _vumediumbars)) bandColor = _vumediumcolor;
+          else bandColor = _vumincolor;
           _canvas->fillRect(i, 0, h, _bands.height, bandColor);
           _canvas->fillRect(i + _bands.width + _bands.space, 0, h, _bands.height, bandColor);
         #else
+          // Boombox style: Max on outside edges
+          if(i>(_bands.width/_bands.perheight)) bandColor = _vumincolor; // Simplified boombox logic (only 1 bar max?) 
+          // Re-implementing Boombox style with configurable bars if possible, but user might want standard.
+          // Keeping Boombox similar to before but with 3 colors if easy.
+          // Original: (i>step)?Min:Max. -> Max at 0..step.
+          // Let's use new logic for standard style requested by user.
           bandColor = (i>(_bands.width/_bands.perheight))?_vumincolor:_vumaxcolor;
           _canvas->fillRect(i, 0, h, _bands.height, bandColor);
           bandColor = (i>_bands.width-(_bands.width/_bands.perheight)*3)?_vumaxcolor:_vumincolor;
           _canvas->fillRect(i + _bands.width + _bands.space, 0, h, _bands.height, bandColor);
         #endif
       }else{
-        bandColor = (i<(_bands.height/_bands.perheight)*3)?_vumaxcolor:_vumincolor;
+        if(i<(_bands.height/_bands.perheight)*_vumaxbars) bandColor = _vumaxcolor;
+        else if(i<(_bands.height/_bands.perheight)*(_vumaxbars + _vumediumbars)) bandColor = _vumediumcolor;
+        else bandColor = _vumincolor;
         _canvas->fillRect(0, i, _bands.width, h, bandColor);
         _canvas->fillRect(_bands.width + _bands.space, i, _bands.width, h, bandColor);
       }
@@ -449,7 +462,7 @@ void VuWidget::_clear(){
 }
 #else // DSP_LCD
 VuWidget::~VuWidget() { }
-void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumincolor, uint16_t bgcolor) {
+void VuWidget::init(WidgetConfig wconf, VUBandsConfig bands, uint16_t vumaxcolor, uint16_t vumediumcolor, uint16_t vumincolor, uint8_t vumaxbars, uint8_t vumediumbars, uint16_t bgcolor) {
   Widget::init(wconf, bgcolor, bgcolor);
 }
 void VuWidget::_draw(){ }

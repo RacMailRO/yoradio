@@ -11,7 +11,7 @@
 #define TFT_DC 2
 #define TFT_RST -1
 
-#define PLAYER_FORCE_MONO true
+#define PLAYER_FORCE_MONO false
 
 #define TFT_ROTATE 2
 

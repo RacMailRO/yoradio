@@ -18,13 +18,16 @@
 /*----------------------------------------------------------------------------------------------------------------*/
 //#define COLOR_BACKGROUND        255, 255,   0     /*  background                                                */
 //#define COLOR_STATION_NAME        0,   0,   0     /*  station name                                              */
-#define COLOR_STATION_BG         91, 118, 255     /*  station name background                                   */
-#define COLOR_STATION_FILL       91, 118, 255     /*  station name fill background                              */
+//#define COLOR_STATION_BG         91, 118, 255     /*  station name background                                   */
+//#define COLOR_STATION_FILL       91, 118, 255     /*  station name fill background                              */
 //#define COLOR_SNG_TITLE_1       255,   0,   0     /*  first title                                               */
 //#define COLOR_SNG_TITLE_2         0,   0,   0     /*  second title                                              */
 //#define COLOR_WEATHER           255,   0, 216     /*  weather string                                            */
 #define COLOR_VU_MAX            246, 64, 0     /*  max of VU meter                                           */
 #define COLOR_VU_MIN            44, 162, 12     /*  min of VU meter                                           */
+#define COLOR_VU_MEDIUM        255, 255,   0     /*  medium of VU meter                                        */
+#define VU_MAX_BARS             2                /*  number of red bars                                        */
+#define VU_MEDIUM_BARS          2                /*  number of yellow bars                                     */
 //#define COLOR_CLOCK              60, 224,  33     /*  clock color                                               */
 //#define COLOR_CLOCK_BG           29,  29,   0     /*  clock color background                                    */
 //#define COLOR_SECONDS             0, 255, 255     /*  seconds color (DSP_ST7789, DSP_ILI9341, DSP_ILI9225)      */

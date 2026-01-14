@@ -181,7 +181,7 @@ void Display::_buildPager(){
     //_metabackground = new FillWidget(metaBGConf, 1);
   #endif
   #ifndef HIDE_VU
-    _vuwidget = new VuWidget(vuConf, bandsConf, config.theme.vumax, config.theme.vumin, config.theme.background);
+    _vuwidget = new VuWidget(vuConf, bandsConf, config.theme.vumax, config.theme.vumedium, config.theme.vumin, config.theme.vumaxbars, config.theme.vumediumbars, config.theme.background);
   #endif
   #ifndef HIDE_VOLBAR
     _volbar = new SliderWidget(volbarConf, config.theme.volbarin, config.theme.background, 254, config.theme.volbarout);

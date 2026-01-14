@@ -341,6 +341,9 @@ void Config::loadTheme(){
   theme.weather       = color565(COLOR_WEATHER);
   theme.vumax         = color565(COLOR_VU_MAX);
   theme.vumin         = color565(COLOR_VU_MIN);
+  theme.vumedium      = color565(COLOR_VU_MEDIUM);
+  theme.vumaxbars     = VU_MAX_BARS;
+  theme.vumediumbars  = VU_MEDIUM_BARS;
   theme.clock         = color565(COLOR_CLOCK);
   theme.clockbg       = color565(COLOR_CLOCK_BG);
   theme.seconds       = color565(COLOR_SECONDS);
